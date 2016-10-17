@@ -1,3 +1,4 @@
+; Number test
 0
 0312
 99
@@ -5,6 +6,7 @@
 -
 
 
+; Exp test
 (defun hi (x)
   (+ x x))
 
