@@ -3,8 +3,11 @@ all:	main
 lex:	lisp.lex
 	flex -s lisp.lex
 
-main:	lex
-	gcc -lfl lex.yy.c -o main
+y:	lisp.y
+	bison -d lisp.y
+
+main:	y lex
+	gcc -lfl -lm lex.yy.c lisp.tab.c -o main
 
 clean:
-	rm -f *~ ./main lex.yy.c
+	rm -f *~ ./main lex.yy.c lisp.tab.*

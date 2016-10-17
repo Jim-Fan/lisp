@@ -1,6 +1,6 @@
 %{
 	#include <math.h>
-	int num;
+	#include "./lisp.tab.h"
 %}
 
 %x lisp_comment
@@ -8,18 +8,18 @@
 %%
 
 ";"	BEGIN(lisp_comment);
-<lisp_comment>[^\n]+	{ printf("; %s\n", yytext); }
+<lisp_comment>[^\n]+	{ /* printf("; %s\n", yytext); */ }
 <lisp_comment>\n	{ BEGIN(INITIAL); }
 
-"("	{ puts(yytext); }
-")"	{ puts(yytext); }
+"("	{ return T_LBRACKET; }
+")"	{ return T_RBRACKET; }
 
-[a-zA-Z][a-zA-Z0-9]*	{ puts(yytext); }
+[a-zA-Z][a-zA-Z0-9]*	{ return T_SYM; }
 
-[0-9]	{ num=atoi(yytext); printf("%d\n", num); }
-"-"?[1-9][0-9]*		{ num=atoi(yytext); printf("%d\n", num); }
+[0-9]	{ return T_NUM; }
+"-"?[1-9][0-9]*		{ return T_NUM; }
 
-"+"|"-"|"*"|"/"		{ puts(yytext); }
+"+"|"-"|"*"|"/"		{ return T_OP; }
 
 [ \t\r\n]	{ /* ignored */ }
 
@@ -28,12 +28,3 @@
 	}
 
 %%
-
-#include <stdio.h>
-
-int yywrap(void) { return 1; }
-
-int main(void)
-{
-  return yylex();
-}
