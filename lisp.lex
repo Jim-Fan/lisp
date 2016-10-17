@@ -1,5 +1,11 @@
 
+%x lisp_comment
+
 %%
+
+";"	BEGIN(lisp_comment);
+<lisp_comment>[^\n]+	{ printf("; %s\n", yytext); }
+<lisp_comment>\n	{ BEGIN(INITIAL); }
 
 "("	{ puts(yytext); }
 ")"	{ puts(yytext); }
