@@ -1,7 +1,7 @@
 all:	main
 
 lex:	lisp.lex
-	flex lisp.lex
+	flex -s lisp.lex
 
 main:	lex
 	gcc -lfl lex.yy.c -o main
