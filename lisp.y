@@ -14,6 +14,8 @@ extern int yylex();
 %%
 
 prog:
+	/* nothing */
+	|
 	mini_prog
 	|
 	prog mini_prog
