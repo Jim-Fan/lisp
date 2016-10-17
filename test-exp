@@ -1,0 +1,19 @@
+0
+0312
+99
+-123
+-
+
+
+(defun hi (x)
+  (+ x x))
+
+(quote this is some unquoted things)
+
+( * 
+  ( + 2 3 )
+  ( - 5 3 ) )
+
+( -
+  (+ -11000 299)
+  0 )
