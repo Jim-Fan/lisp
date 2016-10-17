@@ -1,3 +1,7 @@
+%{
+	#include <math.h>
+	int num;
+%}
 
 %x lisp_comment
 
@@ -12,8 +16,8 @@
 
 [a-zA-Z][a-zA-Z0-9]*	{ puts(yytext); }
 
-[0-9]	{ puts(yytext); }
-"-"?[1-9][0-9]*		{ puts(yytext); }
+[0-9]	{ num=atoi(yytext); printf("%d\n", num); }
+"-"?[1-9][0-9]*		{ num=atoi(yytext); printf("%d\n", num); }
 
 "+"|"-"|"*"|"/"		{ puts(yytext); }
 
