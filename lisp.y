@@ -16,14 +16,7 @@ extern int yylex();
 prog:
 	/* nothing */
 	|
-	mini_prog
-	|
-	prog mini_prog
-;
-
-
-mini_prog:
-	exp
+	exp_list
 ;
 
 
