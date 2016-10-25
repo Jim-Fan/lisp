@@ -1,5 +1,7 @@
 %{
 #include <stdio.h>
+#include "src/atom.h"
+#include "src/cell.h"
 
 int LISP_COUNT = 1;
 
@@ -16,6 +18,22 @@ void yyerror(char* s)
 extern int yylex();
 %}
 
+	/* So that RHS for $$ assignment */
+%union {
+  int num;
+  char* sym;
+  struct atom* a;
+  struct cell* c;
+}
+
+	/* So that $n will work */
+	/* What about exp ? */
+%type <num> T_NUM
+%type <sym> T_SYM
+%type <a> atom
+%type <c> exp
+%type <c> exp_list
+
 %token T_NUM T_SYM T_LBRACKET T_RBRACKET T_OP
 
 %%
@@ -28,15 +46,17 @@ repl:
 
 	/* LISP expression is either atom or list */
 atom:
-	T_NUM | T_SYM
+	T_NUM	{ $$=new_num_atom($1); }
+	|
+	T_SYM	{ $$=new_sym_atom($1); }
 ;
 
 	/* A list is L/Rbrackets with series 
 	   of expression (possibly empty) in it */
 exp_list:
-	/* nothing */
+	/* nothing */	{ $$=0; }
 	|
-	exp exp_list
+	exp exp_list	{ $$=new_cell($1, $2); }
 ;
 
 exp:
