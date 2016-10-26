@@ -20,7 +20,7 @@ extern int yylex();
 
 	/* So that RHS for $$ assignment */
 %union {
-  struct cell* c;
+  struct _cell* c;
 }
 
 %type <c> T_NUM
@@ -41,23 +41,23 @@ repl:
 
 	/* LISP expression is either atom or list */
 atom:
-	T_NUM
+	T_NUM	{ $$ = new_cell('I', $1, NULL); }
 	|
-	T_SYM
+	T_SYM	{ $$ = new_cell('S', $1, NULL); }
 ;
 
 	/* A list is L/R brackets with series 
 	   of expression (possibly empty) in it */
 exp_list:
-	/* nothing */
+	/* nothing */ { $$ = new_cell('L', NULL, NULL); }
 	|
-	exp exp_list
+	exp exp_list { $$=new_cell('L',$1,$2); }
 ;
 
 exp:
-	atom
+	atom { $$=$1; }
 	|
-	T_LBRACKET exp_list T_RBRACKET
+	T_LBRACKET exp_list T_RBRACKET { $$=$2; }
 ;
 
 %%
