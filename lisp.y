@@ -20,17 +20,12 @@ extern int yylex();
 
 	/* So that RHS for $$ assignment */
 %union {
-  int num;
-  char* sym;
-  struct atom* a;
   struct cell* c;
 }
 
-	/* So that $n will work */
-	/* What about exp ? */
-%type <num> T_NUM
-%type <sym> T_SYM
-%type <a> atom
+%type <c> T_NUM
+%type <c> T_SYM
+%type <c> atom
 %type <c> exp
 %type <c> exp_list
 
@@ -46,17 +41,17 @@ repl:
 
 	/* LISP expression is either atom or list */
 atom:
-	T_NUM	{ $$=new_num_atom($1); }
+	T_NUM
 	|
-	T_SYM	{ $$=new_sym_atom($1); }
+	T_SYM
 ;
 
-	/* A list is L/Rbrackets with series 
+	/* A list is L/R brackets with series 
 	   of expression (possibly empty) in it */
 exp_list:
-	/* nothing */	{ $$=0; }
+	/* nothing */
 	|
-	exp exp_list	{ $$=new_cell($1, $2); }
+	exp exp_list
 ;
 
 exp:

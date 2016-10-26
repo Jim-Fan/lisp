@@ -2,17 +2,20 @@
 #define _LISP_LIST_
 
 //typedef struct llist;
+//typedef cell;
 
-typedef struct cell
+typedef struct _cell
 {
-  struct cell* car;
-  struct cell* cdr;
+  char type;
+  struct _cell* car;
+  struct _cell* cdr;
 } cell;
 
-cell* new_cell(cell* car, cell* cdr)
+cell* new_cell(char type, void* car, cell* cdr)
 {
   cell* c = (cell*)malloc(sizeof(cell));
-  c->car = car;
+  c->type = type;
+  c->car = (cell*) car;
   c->cdr = cdr;
   return c;
 }
