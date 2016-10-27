@@ -1,9 +1,9 @@
 %{
 #include <stdio.h>
-#include "src/atom.h"
 #include "src/cell.h"
 
 int LISP_COUNT = 1;
+cell* LISP_ROOT = NULL;
 
 void lisp_prompt()
 {
@@ -20,10 +20,12 @@ extern int yylex();
 
 	/* So that RHS for $$ assignment */
 %union {
+  int i;
+  char* s;
   struct _cell* c;
 }
 
-%type <c> T_NUM
+%type <i> T_NUM
 %type <c> T_SYM
 %type <c> atom
 %type <c> exp
@@ -36,7 +38,7 @@ extern int yylex();
 repl:
 	/* nothing */
 	|
-	exp { LISP_COUNT++; lisp_prompt(); } repl
+	exp { free_cell($1); LISP_COUNT++; lisp_prompt(); } repl
 ;
 
 	/* LISP expression is either atom or list */
