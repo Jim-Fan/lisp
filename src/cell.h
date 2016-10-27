@@ -13,12 +13,12 @@ typedef struct _cell
   struct _cell* cdr;
 } cell;
 
-cell* new_cell(char type, void* car, cell* cdr)
+cell* new_cell(char type, void* car, void* cdr)
 {
   cell* c = (cell*)malloc(sizeof(cell));
   c->type = type;
   c->car = (cell*) car;
-  c->cdr = cdr;
+  c->cdr = (cell*) cdr;
   return c;
 }
 
@@ -34,8 +34,8 @@ void free_cell(cell* c)
       break;
 
     case 'L':
-      if (c->car != NULL) free((cell*) c->car);
-      if (c->cdr != NULL) free((cell*) c->cdr);
+      if (c->car != NULL) free_cell(c->car);
+      if (c->cdr != NULL) free_cell(c->cdr);
       break;
   }
   free(c);
