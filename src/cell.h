@@ -15,6 +15,11 @@ typedef struct _cell
 
 cell* new_cell(char type, void* car, void* cdr)
 {
+  /*
+  if (type=='L' && car==NULL && cdr ==NULL)
+    return NULL;
+  */
+
   cell* c = (cell*)malloc(sizeof(cell));
   c->type = type;
   c->car = (cell*) car;

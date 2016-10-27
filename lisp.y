@@ -51,7 +51,7 @@ atom:
 	/* A list is L/R brackets with series 
 	   of expression (possibly empty) in it */
 exp_list:
-	/* nothing */ { $$ = new_cell('L', NULL, NULL); }
+	/* nothing */ { $$ = NULL; }
 	|
 	exp exp_list { $$=new_cell('L',$1,$2); }
 ;
