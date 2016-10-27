@@ -1,6 +1,8 @@
 #ifndef _LISP_LIST_
 #define _LISP_LIST_
 
+#include <stdlib.h>
+
 //typedef struct llist;
 //typedef cell;
 
@@ -18,6 +20,26 @@ cell* new_cell(char type, void* car, cell* cdr)
   c->car = (cell*) car;
   c->cdr = cdr;
   return c;
+}
+
+void free_cell(cell* c)
+{
+  if (c == NULL) return; 
+  switch (c->type)
+  {
+    case 'I': break;
+
+    case 'S':
+      if (c->car != NULL) free((char*) c->car);
+      break;
+
+    case 'L':
+      if (c->car != NULL) free((cell*) c->car);
+      if (c->cdr != NULL) free((cell*) c->cdr);
+      break;
+  }
+  free(c);
+  return;
 }
 
 #endif
