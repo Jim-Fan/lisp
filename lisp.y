@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include "src/cell.h"
+#include "src/pprint.h"
 
 int LISP_COUNT = 1;
 cell* LISP_ROOT = NULL;
@@ -38,7 +39,12 @@ extern int yylex();
 repl:
 	/* nothing */
 	|
-	exp { free_cell($1); LISP_COUNT++; lisp_prompt(); } repl
+	exp {
+	  pprint($1, 0);
+	  printf("\n");
+	  free_cell($1);
+	  LISP_COUNT++;
+	  lisp_prompt(); } repl
 ;
 
 	/* LISP expression is either atom or list */

@@ -3,10 +3,10 @@ all:	main
 lex.yy.c: lisp.lex
 	flex -s lisp.lex
 
-lisp.tab.c: lisp.y
+lisp.tab.c: src/pprint.h lisp.y
 	bison -d lisp.y
 
-main:	src/cell.h lex.yy.c lisp.tab.c
+main:	lex.yy.c lisp.tab.c
 	gcc -g -o main lex.yy.c lisp.tab.c -lfl -lm
 
 clean:
