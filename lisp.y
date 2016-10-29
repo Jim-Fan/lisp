@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "src/cell.h"
 #include "src/pprint.h"
+#include "src/eval.h"
 
 int LISP_COUNT = 1;
 cell* LISP_ROOT = NULL;
@@ -40,7 +41,8 @@ repl:
 	/* nothing */
 	|
 	exp {
-	  pprint($1, 0);
+	  struct _cell* ans = eval($1,NULL);
+	  pprint(ans, 0);
 	  printf("\n");
 	  free_cell($1);
 	  LISP_COUNT++;
