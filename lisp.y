@@ -3,6 +3,7 @@
 #include "src/cell.h"
 #include "src/pprint.h"
 #include "src/eval.h"
+#include "src/symlist.h"
 
 int LISP_COUNT = 1;
 cell* LISP_ROOT = NULL;
@@ -78,6 +79,10 @@ extern void yyerror(char*);
 
 int main(void)
 {
+  symlist_init();
   lisp_prompt();
-  return yyparse();
+  int i = yyparse();
+  symlist_cleanup();
+
+  return i;
 }

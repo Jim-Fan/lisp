@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include "symlist.h"
 
 cell* eval(cell* c, cell* env)
 {
@@ -22,8 +22,8 @@ cell* eval(cell* c, cell* env)
     // e.g. (eval s) => fetch symlist of name s
     // Problem: (eval undefined) => NIL
     case 'S':
-      printf("eval: symbol '%s' not found\n", (char*)c->car);
-      return NULL;
+      //printf("eval: symbol '%s' not found\n", (char*)c->car);
+      return symlist_get(c->car);
       break;
 
     // (eval (quote 10))
