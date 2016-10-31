@@ -1,11 +1,21 @@
-#ifndef _LIST_BUILTIN_
-#ifndef _LIST_BUILTIN_
+#ifndef _LIST_FEXP_
+#define _LIST_FEXP_
 
 #include "cell.h"
 #include "eval.h"
 
 // interface:
 // cell* func(cell* args, cell* env)
+
+/*
+
+ -----------
+|     |     |
+ -----------
+
+*/
+
+cell* FEXP = NULL;
 
 // (quote a) => a
 // (quote (haha)) => (haha)
@@ -56,5 +66,21 @@ cell* list(cell* arg_list, cell* env)
   */
   return result;
 }
+
+void fexp_init()
+{
+  cell* quote_fexp = new_cell('f', "quote", &quote);
+  cell* cons_fexp  = new_cell('f', "quote", &cons);
+  cell* list_fexp  = new_cell('f', "quote", &list);
+
+  FEXP = new_cell('F', quote_fexp, NULL);
+
+  FEXP->cdr = new_cell('F', cons_fexp, NULL);
+  FEXP = FEXP->cdr;
+
+  FEXP->cdr = new_cell('F', list_fexp, NULL);
+  FEXP = FEXP->cdr;
+}
+
 
 #endif
