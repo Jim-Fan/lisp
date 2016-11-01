@@ -31,8 +31,8 @@ void pprint(cell* c, int level)
       printf("%s ", (char*)c->car);
       break;
 
-    case 'K':
-      printf("#<built-in> ");
+    case 'F':
+      printf("#<callable@%X> ", (void*)c->car);
       break;
 
     case 'L':

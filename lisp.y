@@ -4,9 +4,22 @@
 #include "src/pprint.h"
 #include "src/eval.h"
 #include "src/symlist.h"
+#include "src/fexp.h"
 
 int LISP_COUNT = 1;
 cell* LISP_ROOT = NULL;
+
+void lisp_init()
+{
+  symlist_init();
+  fexp_init();
+}
+
+void lisp_cleanup()
+{
+  symlist_cleanup();
+  fexp_cleanup();
+}
 
 void lisp_prompt()
 {
@@ -79,10 +92,10 @@ extern void yyerror(char*);
 
 int main(void)
 {
-  symlist_init();
+  lisp_init();
   lisp_prompt();
   int i = yyparse();
-  symlist_cleanup();
+  lisp_cleanup();
 
   return i;
 }

@@ -1,17 +1,29 @@
 #ifndef _LIST_FEXP_
 #define _LIST_FEXP_
 
+#include <stdio.h>
 #include "cell.h"
 #include "eval.h"
+#include "util.h"
+
 
 // interface:
 // cell* func(cell* args, cell* env)
 
 /*
 
- -----------
-|     |     |
- -----------
+'f'
+         -----------         -----------
+        |     |     |------>|     |     |
+         -----------         -----------
+           /
+'F':      /
+         /
+    -----------
+   |     |     |
+    -----------
+     /       \
+   "cons"    *func
 
 */
 
@@ -40,47 +52,56 @@ cell* cons(cell* args, cell* env)
 
   cell* result = new_cell(
                    'L',
-                   eval((cell*)args->car, env),
-                   eval((cell*)args->cdr->car, env));
+                   args->car,
+                   args->cdr->car);
   return result;
 }
 
-// (list) => NIL
-cell* list(cell* arg_list, cell* env)
-{
-  if (arg_list == NULL) return NULL;
-
-  cell* result = NULL;
-  cell* iter = arg_list;
-
-  /*
-  // assert iter->type == 'L'
-
-  result = (cell*) malloc(sizeof(cell));
-  memcpy(result, iter, sizeof(cell));    //when should free?
-
-  // now result->car == iter->car
-  // and result->cdr == iter->cdr
-  result->car = eval(iter->car);
-  ...
-  */
-  return result;
-}
 
 void fexp_init()
 {
-  cell* quote_fexp = new_cell('f', "quote", &quote);
-  cell* cons_fexp  = new_cell('f', "quote", &cons);
-  cell* list_fexp  = new_cell('f', "quote", &list);
+  cell* quote_fexp = new_cell('F', "quote", &quote);
+  cell* cons_fexp  = new_cell('F', "cons", &cons);
+  //cell* list_fexp  = new_cell('f', "quote", &list);
 
-  FEXP = new_cell('F', quote_fexp, NULL);
+  FEXP = new_cell('f',
+                  quote_fexp,
+                  new_cell('f',
+                           cons_fexp,
+                           NULL)
+                 );
 
-  FEXP->cdr = new_cell('F', cons_fexp, NULL);
-  FEXP = FEXP->cdr;
-
-  FEXP->cdr = new_cell('F', list_fexp, NULL);
-  FEXP = FEXP->cdr;
+  printf("fexp_init: %d nodes created\n", cell_count(FEXP));
 }
 
+
+cell* fexp_cleanup()
+{
+  int n = 0;
+  cell* head = FEXP;
+  cell* next = NULL;
+  while (head != NULL)
+  {
+    next = head->cdr;
+    free(head);
+    n++;
+    head = next;
+  }
+
+  printf("fexp_cleanup: %d nodes freed\n", n);
+}
+
+
+cell* fexp_get(char* name) {
+  cell* fexp = FEXP;
+  while (fexp != NULL)
+  {
+    if (strcmp((char*) fexp->car->car, name) == 0) {
+      return fexp->car;
+    }
+    fexp = fexp->cdr;
+  }
+  return NULL;
+}
 
 #endif
