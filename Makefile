@@ -1,13 +1,13 @@
 all:	main
 
-lex:	lisp.lex
+lex.yy.c: lisp.lex
 	flex -s lisp.lex
 
-y:	lisp.y
+lisp.tab.c: lisp.y
 	bison -d lisp.y
 
-main:	y lex
-	gcc -lfl -lm lex.yy.c lisp.tab.c -o main
+main:	lex.yy.c lisp.tab.c
+	gcc lex.yy.c lisp.tab.c -lfl -lm -o main
 
 clean:
-	rm -f *~ ./main lex.yy.c lisp.tab.*
+	rm -f *~ ./main lex.yy.c lisp.tab.* *.stackdump
