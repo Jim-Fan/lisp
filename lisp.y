@@ -2,23 +2,16 @@
 #include <stdio.h>
 #include "src/cell.h"
 #include "src/pprint.h"
-#include "src/eval.h"
-#include "src/symlist.h"
-#include "src/fexp.h"
 
 int LISP_COUNT = 1;
 cell* LISP_ROOT = NULL;
 
 void lisp_init()
 {
-  symlist_init();
-  fexp_init();
 }
 
 void lisp_cleanup()
 {
-  symlist_cleanup();
-  fexp_cleanup();
 }
 
 void lisp_prompt()
@@ -55,8 +48,7 @@ repl:
 	/* nothing */
 	|
 	exp {
-	  struct _cell* ans = eval($1,NULL);
-	  pprint(ans, 0);
+	  pprint($1, 0);
 	  printf("\n");
 	  free_cell($1);
 	  LISP_COUNT++;
