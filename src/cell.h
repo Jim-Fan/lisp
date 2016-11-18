@@ -14,6 +14,7 @@ typedef struct _cell
   struct _cell* cdr;
 } cell;
 
+cell* T = (cell*) NULL;
 cell* NIL = (cell*) NULL;
 
 ///////////////////////////////////////////////////////////
@@ -25,14 +26,29 @@ void cell_init()
   NIL->car = NULL;
   NIL->cdr = NULL;
 
+  T = (cell*)malloc(sizeof(cell));
+  T->type = '0';
+  T->car = NULL;
+  T->cdr = NULL;
+
   printf("cell_init: sizeof(cell*) = %d\n", sizeof(cell*));
-  printf("cell_init: sizeof(cell) = %d\n", sizeof(cell));
+  printf("cell_init: sizeof(cell)  = %d\n", sizeof(cell));
+  printf("cell_init: T   @ %08x\n", T);
   printf("cell_init: NIL @ %08x\n", NIL);
 }
 
 void cell_cleanup()
 {
-  if (NIL != NULL) free(NIL);
+  if (NIL != NULL)
+  {
+    free(NIL);
+    NIL = NULL;
+  }
+  if (T != NULL)
+  {
+    free(T);
+    T = NULL;
+  }
 }
 
 ///////////////////////////////////////////////////////////
