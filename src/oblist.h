@@ -4,7 +4,6 @@
 #include <string.h>
 #include "cell.h"
 
-
 cell* OBLIST = (cell*) NULL;
 
 ///////////////////////////////////////////////////////////
@@ -25,6 +24,12 @@ void oblist_init()
   // Terminate OBLIST with NULL:
   // OBLIST is merely a linked list and not s-expression
   c->cdr = NULL;
+
+  for (c = OBLIST; c != NULL; c=c->cdr) {
+    printf("oblist_init: %s @ 0x%08x\n",
+      (char*)c->car->car,
+      c->car);
+  }
 }
 
 void oblist_cleanup()
