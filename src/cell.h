@@ -23,12 +23,12 @@ void cell_init()
 {
   NIL = (cell*)malloc(sizeof(cell));
   NIL->type = '0';
-  NIL->car = NULL;
+  NIL->car = "NIL";
   NIL->cdr = NULL;
 
   T = (cell*)malloc(sizeof(cell));
   T->type = '0';
-  T->car = NULL;
+  T->car = "T";
   T->cdr = NULL;
 
   printf("cell_init: sizeof(cell*) = %d\n", sizeof(cell*));
