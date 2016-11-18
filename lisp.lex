@@ -14,10 +14,10 @@
 "("	{ return T_LBRACKET; }
 ")"	{ return T_RBRACKET; }
 
-[a-zA-Z][a-zA-Z0-9]*	{ return T_SYM; }
+[a-zA-Z][a-zA-Z0-9]*	{ yylval.s=strdup(yytext); return T_SYM; }
 
-[0-9]	{ return T_NUM; }
-"-"?[1-9][0-9]*		{ return T_NUM; }
+[0-9]	{ yylval.i=atoi(yytext); return T_NUM; }
+"-"?[1-9][0-9]*		{ yylval.i=atoi(yytext); return T_NUM; }
 
 "+"|"-"|"*"|"/"		{ return T_OP; }
 
