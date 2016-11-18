@@ -19,6 +19,8 @@ cell* NIL = (cell*) NULL;
 
 ///////////////////////////////////////////////////////////
 
+cell* new_cell(char,cell*,cell*);
+
 void cell_init()
 {
   NIL = (cell*)malloc(sizeof(cell));
@@ -33,8 +35,8 @@ void cell_init()
 
   printf("cell_init: sizeof(cell*) = %d\n", sizeof(cell*));
   printf("cell_init: sizeof(cell)  = %d\n", sizeof(cell));
-  printf("cell_init: T   @ %08x\n", T);
-  printf("cell_init: NIL @ %08x\n", NIL);
+  printf("cell_init: T   @ 0x%08x\n", T);
+  printf("cell_init: NIL @ 0x%08x\n", NIL);
 }
 
 void cell_cleanup()
@@ -53,12 +55,18 @@ void cell_cleanup()
 
 ///////////////////////////////////////////////////////////
 
+// Can't include oblist.h, otherwise recursion
+cell* oblist_lookup(char*);
+
 cell* new_cell(char type, cell* car, cell* cdr)
 {
-  /*
-  if (type=='L' && car==NULL && cdr ==NULL)
-    return NULL;
-  */
+  // For symbol, lookup from OBLIST, create if not exist
+  if (type == 'S')
+  {
+    char* name = (char*)car;
+    cell* ob = oblist_lookup(name);
+    if (ob != NULL) return ob;
+  }
 
   cell* c = (cell*)malloc(sizeof(cell));
   c->type = type;
@@ -73,10 +81,11 @@ void free_cell(cell* c)
 
   if (c == NIL) return;
 
+  // free by cell_cleanup, ignored
+  if (c->type == '0') return;
+
   switch (c->type)
   {
-    //case '0':
-
     case 'I':
       break;
 

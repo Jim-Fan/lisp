@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include "src/cell.h"
+#include "src/oblist.h"
 #include "src/pprint.h"
 
 int LISP_COUNT = 1;
@@ -9,10 +10,12 @@ cell* LISP_ROOT = NULL;
 void lisp_init()
 {
   cell_init();
+  oblist_init();
 }
 
 void lisp_cleanup()
 {
+  oblist_cleanup();
   cell_cleanup();
 }
 

@@ -32,12 +32,9 @@ void pprint(cell* c, int level)
       printf("%d ", c->car);
       break;
 
+    case '0':
     case 'S':
       printf("%s ", (char*)c->car);
-      break;
-
-    case 'F':
-      printf("#<callable@%X> ", (void*)c->car);
       break;
 
     case 'L':
