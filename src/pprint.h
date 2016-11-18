@@ -11,12 +11,17 @@ void put_space(int level)
 
 void pprint(cell* c, int level)
 {
-  put_space(level);
+  //put_space(level);
 
   if (c == NULL) {
-    put_space(level);
-    printf("NIL");
+    //put_space(level);
+    fprintf(stderr, "\npprint: null pointer\n");
     return;
+  }
+
+  if (c == NIL) {
+      printf("NIL ");
+      return;
   }
 
   cell* next;
@@ -24,7 +29,7 @@ void pprint(cell* c, int level)
   switch (c->type) {
 
     case 'I':
-      printf("%d ", (int)c->car);
+      printf("%d ", c->car);
       break;
 
     case 'S':
@@ -38,19 +43,26 @@ void pprint(cell* c, int level)
     case 'L':
 
       // Iterate through linked list, print
-      // only it's element (c->car)
+      // only it's element (c->car)  <==  ????
       next = c;
+
+      put_space(level);
       printf("(");
-      while (next != NULL) {
+
+      while (next != NULL && next != NIL) {
         pprint(next->car, level+1);
-        putchar(' ');
+        //putchar('\n');
+        //pprint(next->cdr, level+1);
         next = next->cdr;
       }
+
+      put_space(level);
       printf(")");
+
       break;
 
     default:
-      printf("pprint: should not reach here\n");
+      fprintf(stderr, "\npprint: reached default branch\n");
   }
 }
 

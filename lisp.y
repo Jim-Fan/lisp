@@ -8,10 +8,12 @@ cell* LISP_ROOT = NULL;
 
 void lisp_init()
 {
+  cell_init();
 }
 
 void lisp_cleanup()
 {
+  cell_cleanup();
 }
 
 void lisp_prompt()
@@ -57,15 +59,15 @@ repl:
 
 	/* LISP expression is either atom or list */
 atom:
-	T_NUM	{ $$ = new_cell('I', $1, NULL); }
+	T_NUM	{ $$ = new_cell('I', $1, NIL); }
 	|
-	T_SYM	{ $$ = new_cell('S', $1, NULL); }
+	T_SYM	{ $$ = new_cell('S', $1, NIL); }
 ;
 
 	/* A list is L/R brackets with series 
 	   of expression (possibly empty) in it */
 exp_list:
-	/* nothing */ { $$ = NULL; }
+	/* nothing */ { $$ = NIL; }
 	|
 	exp exp_list { $$=new_cell('L',$1,$2); }
 ;

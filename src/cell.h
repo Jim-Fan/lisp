@@ -1,6 +1,7 @@
 #ifndef _LISP_LIST_
 #define _LISP_LIST_
 
+#include <stdio.h>
 #include <stdlib.h>
 
 //typedef struct llist;
@@ -13,7 +14,30 @@ typedef struct _cell
   struct _cell* cdr;
 } cell;
 
-cell* new_cell(char type, void* car, void* cdr)
+cell* NIL = (cell*) NULL;
+
+///////////////////////////////////////////////////////////
+
+void cell_init()
+{
+  NIL = (cell*)malloc(sizeof(cell));
+  NIL->type = '0';
+  NIL->car = NULL;
+  NIL->cdr = NULL;
+
+  printf("cell_init: sizeof(cell*) = %d\n", sizeof(cell*));
+  printf("cell_init: sizeof(cell) = %d\n", sizeof(cell));
+  printf("cell_init: NIL @ %08x\n", NIL);
+}
+
+void cell_cleanup()
+{
+  if (NIL != NULL) free(NIL);
+}
+
+///////////////////////////////////////////////////////////
+
+cell* new_cell(char type, cell* car, cell* cdr)
 {
   /*
   if (type=='L' && car==NULL && cdr ==NULL)
@@ -22,17 +46,23 @@ cell* new_cell(char type, void* car, void* cdr)
 
   cell* c = (cell*)malloc(sizeof(cell));
   c->type = type;
-  c->car = (cell*) car;
-  c->cdr = (cell*) cdr;
+  c->car = car;
+  c->cdr = cdr;
   return c;
 }
 
 void free_cell(cell* c)
 {
-  if (c == NULL) return; 
+  if (c == NULL) return;
+
+  if (c == NIL) return;
+
   switch (c->type)
   {
-    case 'I': break;
+    //case '0':
+
+    case 'I':
+      break;
 
     case 'S':
       if (c->car != NULL) free((char*) c->car);
