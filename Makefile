@@ -10,4 +10,5 @@ main:	lex.yy.c lisp.tab.c
 	gcc -g -o main lex.yy.c lisp.tab.c -lfl -lm
 
 clean:
-	rm -f *~ ./main lex.yy.c lisp.tab.* *.stackdump
+	rm -f *~ ./main lex.yy.c lisp.tab.* *.stackdump ; \
+	find . -name '*~' -print | xargs rm -f
