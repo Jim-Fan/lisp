@@ -37,6 +37,10 @@ void pprint(cell* c, int level)
       printf("%s ", (char*)c->car);
       break;
 
+    case 'F':
+      printf("#<BUILTIN-FUNC:%s> ", (char*)c->car);
+      break;
+
     case 'L':
 
       // Iterate through linked list, print

@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include "src/cell.h"
+#include "src/fexp.h"
 #include "src/oblist.h"
 #include "src/pprint.h"
 
@@ -10,12 +11,14 @@ cell* LISP_ROOT = NULL;
 void lisp_init()
 {
   cell_init();
+  fexp_init();
   oblist_init();
 }
 
 void lisp_cleanup()
 {
   oblist_cleanup();
+  fexp_cleanup();
   cell_cleanup();
 }
 
@@ -53,7 +56,7 @@ repl:
 	/* nothing */
 	|
 	exp {
-	  pprint($1, 0);
+	  pprint(eval($1, NULL), 0);
 	  printf("\n");
 	  free_cell($1);
 	  LISP_COUNT++;

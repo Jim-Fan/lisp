@@ -3,7 +3,7 @@ all:	main
 lex.yy.c: lisp.lex
 	flex -s lisp.lex
 
-lisp.tab.c: src/pprint.h src/cell.h src/oblist.h lisp.y
+lisp.tab.c: src/pprint.h src/cell.h src/oblist.h src/fexp.h lisp.y
 	bison -d lisp.y
 
 main:	lex.yy.c lisp.tab.c

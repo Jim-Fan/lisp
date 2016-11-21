@@ -84,6 +84,9 @@ void free_cell(cell* c)
   // free by cell_cleanup, ignored
   if (c->type == '0') return;
 
+  // free by fexp, ignored
+  if (c->type == 'F') return;
+
   switch (c->type)
   {
     case 'I':
