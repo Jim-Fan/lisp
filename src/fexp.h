@@ -1,4 +1,4 @@
-#ifndef _LISP_FEXP_
+#ifndef _LIST_FEXP_
 #define _LISP_FEXP_
 
 #include <stdarg.h>
@@ -7,8 +7,7 @@
 
 cell* fexp_lookup(char*);
 cell* apply(cell*,cell*);
-//cell* apply2(cell*,...);
-  
+
 ////////////////////////////////////////////////////////////////
 
 cell* eval(cell* c, void* env)
@@ -39,7 +38,9 @@ cell* eval(cell* c, void* env)
       if (value == NULL) {
 	value = fexp_lookup(name);
       }
-      fprintf(stderr, "eval: unbound symbol '%s'\n", name);
+      if (value == NULL) {
+        fprintf(stderr, "eval: unbound symbol '%s'\n", name);
+      }
       break;
 
     case 'L':
@@ -114,7 +115,7 @@ cell* eval(cell* c, void* env)
 	if (strcmp(name, "eval") == 0) return eval(c->cdr, env);
 
 	// Otherwise (try to) eval first arg as applicable
-	
+
 	// Eval each parameter in place
 	butfirst = c->cdr;
 	for (first = butfirst; first != NIL && first != NULL; first=first->cdr)
@@ -140,10 +141,10 @@ cell* eval(cell* c, void* env)
 	{
 	  // The same issue will happen:
 	  //value = apply(first, butfirst, env);
-	  
+
 	  // Results in:
 	  //     apply[ eval, (12) ] => apply[ eval, apply[12] ] ...
-	  
+
 	  // It appears there's need to re-write apply as:
 	  //     apply(cell* f, void* env, va_list args)
 	  // and so as all built-in functions.
@@ -187,11 +188,45 @@ cell* apply(cell* f, cell* args)
 //////////////////////////////////////////////////////////////////////
 
 
+cell* car(cell* args)
+{
+  if (args == NULL || args->car == NULL) {
+    fprintf(stderr, "car: args is NULL\n");
+    return NIL;
+  }
+  return args->car->car;
+}
+
+cell* cdr(cell* args)
+{
+  if (args == NULL || args->car == NULL) {
+    fprintf(stderr, "cdr: args is NULL\n");
+    return NIL;
+  }
+  return args->car->cdr;
+}
+
 cell* cons(cell* args)
 {
   // assert there are exactly two params
-  cell* car = args->car;
-  cell* cdr = (args->cdr == NULL ? NULL : args->cdr->car);
+  cell* car = NULL;
+  cell* cdr = NULL;
+
+  if (args != NULL) {
+    if (args->car != NULL) {
+      car = args->car;
+    }
+
+    if (args->cdr != NULL) {
+      if (args->cdr == NIL) { // list has one element only
+	cdr = NULL;
+      }
+      else {
+	cdr = args->cdr->car;
+      }
+    }
+  }
+
 
   if (car == NULL || cdr == NULL) {
     fprintf(stderr, "cons: expect two parameters\n");
@@ -228,12 +263,15 @@ void fexp_init()
   next->cdr = new_cell('B', NULL, NULL);
   next = next->cdr;
 
-  /*
-  next->car = new_cell('F', "APPLY", &apply);
+  next->car = new_cell('F', "car", &car);
 
   next->cdr = new_cell('B', NULL, NULL);
   next = next->cdr;
-  */
+
+  next->car = new_cell('F', "cdr", &cdr);
+
+  next->cdr = new_cell('B', NULL, NULL);
+  next = next->cdr;
 
   next->car = new_cell('F', "plus", &plus);
 }
