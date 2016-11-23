@@ -194,6 +194,15 @@ cell* car(cell* args)
     fprintf(stderr, "car: args is NULL\n");
     return NIL;
   }
+
+  // By definition: (car NIL) => NIL
+  if (args->car == NIL) return NIL;
+
+  if (args->car->type != 'L') {
+    fprintf(stderr, "car: args is not a list\n");
+    return NIL;
+  }
+
   return args->car->car;
 }
 
@@ -203,6 +212,15 @@ cell* cdr(cell* args)
     fprintf(stderr, "cdr: args is NULL\n");
     return NIL;
   }
+
+  // By definition: (cdr NIL) => NIL
+  if (args->car == NIL) return NIL;
+
+  if (args->car->type != 'L') {
+    fprintf(stderr, "car: args is not a list\n");
+    return NIL;
+  }
+
   return args->car->cdr;
 }
 
