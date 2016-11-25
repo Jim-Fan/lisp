@@ -55,6 +55,13 @@ void pprint(cell* c, int level)
         //putchar('\n');
         //pprint(next->cdr, level+1);
         next = next->cdr;
+
+        // Improper list, ending element is not list node and is not NIL
+        if (next != NIL && next->type != 'L') {
+          printf(". ");
+          pprint(next, level+1);
+          break;
+        }
       }
 
       put_space(level);
