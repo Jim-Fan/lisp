@@ -11,14 +11,12 @@ cell* LISP_ROOT = NULL;
 void lisp_init()
 {
   cell_init();
-  fexp_init();
   oblist_init();
 }
 
 void lisp_cleanup()
 {
   oblist_cleanup();
-  fexp_cleanup();
   cell_cleanup();
 }
 
