@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include "cell.h"
 
+cell* eval(cell*, void*)
 cell* fexp_lookup(char*);
 cell* apply(cell*,cell*);
+cell* quote(cell*);
 
 ////////////////////////////////////////////////////////////////
 
@@ -47,17 +49,17 @@ cell* eval(cell* c, void* env)
       //printf("eval_cell: type L cell, return dummy NIL\n");
       //value = NIL;
 
-      /* To eval an expression is more subtle and deserves some 
+      /* To eval an expression is more subtle and deserves some
 	 elaboration:
 
-	 Below snippet is faulty. Consider expression to be 
+	 Below snippet is faulty. Consider expression to be
 	 eval:
 
 	    ( eval 3 )
 	 => apply[ eval, (3) ]
 	 => apply[ eval, apply[ 3, [] ] ]
 
-	 which causes atom 3 being eval as applicable. The 
+	 which causes atom 3 being eval as applicable. The
 	 correct way should instead be:
 
 	    ( eval 3 )
@@ -104,14 +106,15 @@ cell* eval(cell* c, void* env)
 
       // And how about eval itself, and apply?
 
-      // First param is atom
+      // First thing in list is atom
       if (c->car->type == 'S')
       {
 	first = c->car;
-	name = (char*)c->car;
+	name = (char*)c->car->car;
 
-	// "Built-in" funtors
-	if (strcmp(name, "quote") == 0) return c->cdr;
+	// "FEXPS" (non-evaluating functions)
+	if (strcmp(name, "quote") == 0) return quote(c);
+
 	if (strcmp(name, "eval") == 0) return eval(c->cdr, env);
 
 	// Otherwise (try to) eval first arg as applicable
@@ -165,6 +168,27 @@ cell* eval(cell* c, void* env)
   }
 
   return value;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+/*
+  Example: (quote 13)
+        => quote[13]
+        => 13
+
+  If (quote 13) is treated a list, the action is to take out the 2nd
+  element from this list and return it.
+*/
+cell* quote(cell* c)
+{
+  // Exactly one argument
+  if (c->cdr != NULL && c->cdr != NIL && c->cdr->car != NULL) {
+    return c->cdr->car;
+  }
+  else {
+    fprintf(stderr, "quote: require one argument\n");
+  }
 }
 
 //////////////////////////////////////////////////////////////////////
