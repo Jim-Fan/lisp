@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "cell.h"
 
-cell* eval(cell*, void*)
+cell* eval(cell*, void*);
 cell* fexp_lookup(char*);
 cell* apply(cell*,cell*);
 cell* quote(cell*);
@@ -42,6 +42,7 @@ cell* eval(cell* c, void* env)
       }
       if (value == NULL) {
         fprintf(stderr, "eval: unbound symbol '%s'\n", name);
+        return NIL;
       }
       break;
 
