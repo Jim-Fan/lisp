@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 //typedef struct llist;
 //typedef cell;
@@ -23,15 +24,17 @@ cell* new_cell(char,cell*,cell*);
 
 void cell_init()
 {
+  // car and cdr part of NIL is still NIL => NIL is list
   NIL = (cell*)malloc(sizeof(cell));
-  NIL->type = '0';
+  NIL->type = '0';    // 0 => constant => won't be free
   NIL->car = "NIL";
-  NIL->cdr = NULL;
+  NIL->cdr = NIL;
 
+  // on contrary T is not list
   T = (cell*)malloc(sizeof(cell));
-  T->type = '0';
+  T->type = '0';      // 0 => constant => won't be free
   T->car = "T";
-  T->cdr = NULL;
+  T->cdr = NIL;
 
   printf("cell_init: sizeof(cell*) = %d\n", sizeof(cell*));
   printf("cell_init: sizeof(cell)  = %d\n", sizeof(cell));
@@ -64,8 +67,15 @@ cell* new_cell(char type, cell* car, cell* cdr)
   if (type == 'S')
   {
     char* name = (char*)car;
-    cell* ob = oblist_lookup(name);
-    if (ob != NULL) return ob;
+
+    while (*name != '\0') {
+      *name = toupper(*name);
+      ++name;
+    }
+
+    //name = (char*)car;
+    //cell* ob = oblist_lookup(name);
+    //if (ob != NULL) return ob;
   }
 
   cell* c = (cell*)malloc(sizeof(cell));
