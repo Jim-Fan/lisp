@@ -4,11 +4,12 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "cell.h"
+#include "oblist.h"
 
 cell* eval(cell*, void*);
-cell* fexp_lookup(char*);
-cell* apply(cell*,cell*);
+cell* apply(cell*, cell*);
 cell* quote(cell*);
+cell* setq(cell*);
 
 ////////////////////////////////////////////////////////////////
 
@@ -16,7 +17,7 @@ cell* eval(cell* c, void* env)
 {
   if (c == NULL) return NULL;
 
-  cell *value, *first, *butfirst;
+  cell *value, *first, *butfirst, *f;
   char* name = NULL;
 
   switch (c->type)
@@ -38,11 +39,11 @@ cell* eval(cell* c, void* env)
         value = oblist_lookup(name);
       }
       if (value == NULL) {
-	value = fexp_lookup(name);
-      }
-      if (value == NULL) {
         fprintf(stderr, "eval: unbound symbol '%s'\n", name);
         return NIL;
+      }
+      else {
+	return value;
       }
       break;
 
@@ -107,55 +108,50 @@ cell* eval(cell* c, void* env)
 
       // And how about eval itself, and apply?
 
-      // First thing in list is atom
+      // Case 1 - First 'thing' in list is atom
+      //
+      // i)  FEXP (quote, eval, apply...etc)
+      // ii) Symbol bound to function
       if (c->car->type == 'S')
       {
-	first = c->car;
 	name = (char*)c->car->car;
 
 	// "FEXPS" (non-evaluating functions)
-	if (strcmp(name, "quote") == 0) return quote(c);
+	if (strcmp(name, "QUOTE") == 0) return quote(c);
+	if (strcmp(name, "EVAL") == 0) return eval(c->cdr, env);
+	if (strcmp(name, "SETQ") == 0) return setq(c->cdr);
 
-	if (strcmp(name, "eval") == 0) return eval(c->cdr, env);
-
-	// Otherwise (try to) eval first arg as applicable
-
-	// Eval each parameter in place
-	butfirst = c->cdr;
-	for (first = butfirst; first != NIL && first != NULL; first=first->cdr)
-	{
-	  first->car = eval(first->car, env);
-	}
-
-	// Eval first arg as applicable
-	first = eval(c->car, env);
-
-	// Basic protection
-	if (first == NULL)
-	{
-	  fprintf(stderr, "eval: first symbol eval to NULL and is not applicable\n");
-	  return NIL;
-	}
-	else if (first->type != 'F')
-	{
-	  fprintf(stderr, "eval: symbol eval to non-applicable type\n");
-	  return NIL;
-	}
-	else
-	{
-	  // The same issue will happen:
-	  //value = apply(first, butfirst, env);
-
-	  // Results in:
-	  //     apply[ eval, (12) ] => apply[ eval, apply[12] ] ...
-
-	  // It appears there's need to re-write apply as:
-	  //     apply(cell* f, void* env, va_list args)
-	  // and so as all built-in functions.
-	  return apply(first, butfirst);
-	}
+	f = eval(c->car, env);
       }
-      fprintf(stderr, "eval: unable to eval compound applicable exp\n");
+
+      // Basic protection
+      if (f->type != 'F')
+      {
+	fprintf(stderr,
+		"eval: symbol '%s' is not applicable\n",
+		(char*)c->car->car);
+	return NIL;
+      }
+
+      // Eval each parameter in place
+      butfirst = c->cdr;
+      for (first = butfirst; first != NIL && first != NULL; first=first->cdr)
+      {
+	first->car = eval(first->car, env);
+      }
+	
+      // The same issue will happen:
+      //value = apply(first, butfirst, env);
+	
+      // Results in:
+      //     apply[ eval, (12) ] => apply[ eval, apply[12] ] ...
+
+      // It appears there's need to re-write apply as:
+      //     apply(cell* f, void* env, va_list args)
+      // and so as all built-in functions.
+      return apply(f, butfirst);
+
+      fprintf(stderr, "eval: unable to eval expression\n");
       return NIL;
       break;
 
@@ -172,6 +168,26 @@ cell* eval(cell* c, void* env)
 }
 
 //////////////////////////////////////////////////////////////////////
+
+
+cell* apply(cell* f, cell* args)
+{
+  if (f->type == 'F') {
+    cell* (*f_ptr) (cell*);
+    f_ptr = f->cdr;
+
+    return f_ptr(args); // wrong, should be f_ptr(args[0], args[1] ... args[n])
+  }
+  else {
+    fprintf(stderr, "apply: error, cell type '%c' not applicable", f->type);
+  }
+
+  fprintf(stderr, "apply: return last-resort NIL\n");
+  return NIL;
+}
+
+//////////////////////////////////////////////////////////////////////
+
 
 /*
   Example: (quote 13)
@@ -194,157 +210,26 @@ cell* quote(cell* c)
 
 //////////////////////////////////////////////////////////////////////
 
-cell* apply(cell* f, cell* args)
+// (setq x 10) => setq[x, 10] => 10
+cell* setq(cell* c)
 {
-  if (f->type == 'F') {
-    cell* (*f_ptr) (cell*);
-    f_ptr = f->cdr;
-
-    return f_ptr(args); // wrong, should be f_ptr(args[0], args[1] ... args[n])
-  }
-  else {
-    fprintf(stderr, "apply: error, cell type '%c' not applicable", f->type);
-  }
-
-  fprintf(stderr, "apply: return last-resort NIL\n");
-  return NIL;
-}
-
-//////////////////////////////////////////////////////////////////////
-
-
-cell* car(cell* args)
-{
-  if (args == NULL || args->car == NULL) {
-    fprintf(stderr, "car: args is NULL\n");
+  if (c == NULL) {
+    fprintf(stderr, "setq: expect two argument\n");
     return NIL;
   }
 
-  // By definition: (car NIL) => NIL
-  if (args->car == NIL) return NIL;
-
-  if (args->car->type != 'L') {
-    fprintf(stderr, "car: args is not a list\n");
+  if (c->car->type != 'S') {
+    fprintf(stderr, "setq: first argument is not literal atom\n");
     return NIL;
   }
 
-  return args->car->car;
-}
-
-cell* cdr(cell* args)
-{
-  if (args == NULL || args->car == NULL) {
-    fprintf(stderr, "cdr: args is NULL\n");
+  if (c->cdr == NULL || c->cdr == NIL || c->cdr->car == NULL) {
+    fprintf(stderr, "setq: expect two argument\n");
     return NIL;
   }
 
-  // By definition: (cdr NIL) => NIL
-  if (args->car == NIL) return NIL;
-
-  if (args->car->type != 'L') {
-    fprintf(stderr, "car: args is not a list\n");
-    return NIL;
-  }
-
-  return args->car->cdr;
-}
-
-cell* cons(cell* args)
-{
-  // assert there are exactly two params
-  cell* car = NULL;
-  cell* cdr = NULL;
-
-  if (args != NULL) {
-    if (args->car != NULL) {
-      car = args->car;
-    }
-
-    if (args->cdr != NULL) {
-      if (args->cdr == NIL) { // list has one element only
-	cdr = NULL;
-      }
-      else {
-	cdr = args->cdr->car;
-      }
-    }
-  }
-
-
-  if (car == NULL || cdr == NULL) {
-    fprintf(stderr, "cons: expect two parameters\n");
-    return NIL;
-  }
-
-  return new_cell('L', car, cdr);
-}
-
-cell* plus(cell* args)
-{
-  int val = 0;
-  cell* c = args;
-  while (c != NIL)
-  {
-    val += (int)c->car->car;
-    c = c->cdr;
-  }
-  return new_cell('I', (cell*) val, NIL);
-}
-
-//////////////////////////////////////////////////////////////////////
-
-
-cell* FEXP_LIST = NULL;
-
-void fexp_init()
-{
-  FEXP_LIST = new_cell('B', NULL, NULL);
-  cell* next= FEXP_LIST;
-
-  next->car = new_cell('F', "cons", &cons);
-
-  next->cdr = new_cell('B', NULL, NULL);
-  next = next->cdr;
-
-  next->car = new_cell('F', "car", &car);
-
-  next->cdr = new_cell('B', NULL, NULL);
-  next = next->cdr;
-
-  next->car = new_cell('F', "cdr", &cdr);
-
-  next->cdr = new_cell('B', NULL, NULL);
-  next = next->cdr;
-
-  next->car = new_cell('F', "plus", &plus);
-}
-
-void fexp_cleanup()
-{
-  int count=0;
-  cell* cur = FEXP_LIST, *next;
-  while (cur != NULL)
-  {
-    free(cur->car);
-    next = cur->cdr;
-    free(cur);
-
-    ++count;
-    cur = next;
-  }
-
-  printf("fexp_cleanup: removed %d node\n", count);
-}
-
-cell* fexp_lookup(char* name)
-{
-  cell* cur = FEXP_LIST;
-  while (cur != NULL)
-  {
-    if (strcmp((char*)cur->car->car, name) == 0) return cur->car;
-    cur = cur->cdr;
-  }
-  return NULL;
+  char* name = c->car->car;
+  return oblist_put(name, c->cdr->car);
 }
 
 #endif
