@@ -11,8 +11,8 @@
   All literal atoms, including the built-in atoms (T, NIL, and the built-in
   functions), are organized into a single list within the workspace, called
   the OBLIST. Literal atoms are always unique; for some atom A, there can
-  be only one instance of A in the workspace. All references to this atom 
-  are pointers to the single location where A resides. Numeric atoms, 
+  be only one instance of A in the workspace. All references to this atom
+  are pointers to the single location where A resides. Numeric atoms,
   however, are not unique; there can be any number of instances of a given
   numeric value.
 */
@@ -23,36 +23,36 @@ cell* OBLIST = (cell*) NULL;
 
 void oblist_init()
 {
-  OBLIST = (cell*)malloc(sizeof(cell));
+  cell* c = (cell*)malloc(sizeof(cell));
+  OBLIST = c;
 
-  cell* c = OBLIST;
   c->type = 'B';
-  c->car = T;
-
-  c->cdr = (cell*)malloc(sizeof(cell));
+  c->car = new_cell('S', strdup("NIL"), NIL); // leave (name-value pair)
+  c->cdr = (cell*)malloc(sizeof(cell));  // stem
   c = c->cdr;
-  c->type = 'B';
-  c->car = NIL;
 
-  c->cdr = (cell*)malloc(sizeof(cell));
-  c = c->cdr;
   c->type = 'B';
-  c->car = new_cell('F', "CONS", &cons);
+  c->car = new_cell('S', strdup("T"), T); // leave (name-value pair)
+  c->cdr = (cell*)malloc(sizeof(cell));  // stem
+  c = c->cdr;
 
-  c->cdr = (cell*)malloc(sizeof(cell));
-  c = c->cdr;
   c->type = 'B';
-  c->car = new_cell('F', "CAR", &car);  
+  c->car = new_cell('S', strdup("CONS"), &cons);
+  c->cdr = (cell*)malloc(sizeof(cell));  // stem
+  c = c->cdr;
 
-  c->cdr = (cell*)malloc(sizeof(cell));
-  c = c->cdr;
   c->type = 'B';
-  c->car = new_cell('F', "CDR", &cdr);
+  c->car = new_cell('S', strdup("CAR"), &car);
+  c->cdr = (cell*)malloc(sizeof(cell));  // stem
+  c = c->cdr;
 
-  c->cdr = (cell*)malloc(sizeof(cell));
-  c = c->cdr;
   c->type = 'B';
-  c->car = new_cell('F', "PLUS", &plus);
+  c->car = new_cell('S', strdup("CDR"), &cdr);
+  c->cdr = (cell*)malloc(sizeof(cell));  // stem
+  c = c->cdr;
+
+  c->type = 'B';
+  c->car = new_cell('S', strdup("PLUS"), &plus);
 
   // Terminate OBLIST with NULL:
   // OBLIST is merely a linked list and not s-expression
@@ -63,10 +63,12 @@ void oblist_init()
 
 void oblist_dump()
 {
-  cell* c;
-  for (c = OBLIST; c != NULL; c=c->cdr) {
+  cell*c, *pair;
+  for (c = OBLIST; c != NULL; c=c->cdr)
+  {
+    pair = c;
     printf("oblist_init: %s @ 0x%08x\n",
-	   (char*)c->car->car,
+	   (char*)pair->car->car,
 	   c->car);
   }
 }

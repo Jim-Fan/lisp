@@ -27,13 +27,13 @@ void cell_init()
   // car and cdr part of NIL is still NIL => NIL is list
   NIL = (cell*)malloc(sizeof(cell));
   NIL->type = '0';    // 0 => constant => won't be free
-  NIL->car = "NIL";
+  NIL->car = NIL;
   NIL->cdr = NIL;
 
   // on contrary T is not list
   T = (cell*)malloc(sizeof(cell));
   T->type = '0';      // 0 => constant => won't be free
-  T->car = "T";
+  T->car = NIL;
   T->cdr = NIL;
 
   printf("cell_init: sizeof(int) = %d\n", sizeof(int));
