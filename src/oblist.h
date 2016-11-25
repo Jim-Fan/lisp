@@ -4,6 +4,18 @@
 #include <string.h>
 #include "cell.h"
 
+/*
+  Reference: http://jeffshrager.org/llisp/27.html
+
+  All literal atoms, including the built-in atoms (T, NIL, and the built-in
+  functions), are organized into a single list within the workspace, called
+  the OBLIST. Literal atoms are always unique; for some atom A, there can
+  be only one instance of A in the workspace. All references to this atom 
+  are pointers to the single location where A resides. Numeric atoms, 
+  however, are not unique; there can be any number of instances of a given
+  numeric value.
+*/
+
 cell* OBLIST = (cell*) NULL;
 
 ///////////////////////////////////////////////////////////
