@@ -36,6 +36,7 @@ void cell_init()
   T->car = "T";
   T->cdr = NIL;
 
+  printf("cell_init: sizeof(int) = %d\n", sizeof(int));
   printf("cell_init: sizeof(cell*) = %d\n", sizeof(cell*));
   printf("cell_init: sizeof(cell)  = %d\n", sizeof(cell));
   printf("cell_init: T   @ 0x%08x\n", T);
@@ -58,8 +59,6 @@ void cell_cleanup()
 
 ///////////////////////////////////////////////////////////
 
-// Can't include oblist.h, otherwise recursion
-cell* oblist_lookup(char*);
 
 cell* new_cell(char type, cell* car, cell* cdr)
 {
