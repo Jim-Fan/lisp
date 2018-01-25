@@ -1,38 +1,11 @@
-# lisp
-Current status:
+Hello, this LISP interpreter is no longer maintained or developed.
 
-A LISP REPL without "E" - accept LISP expression and then pretty printed it. Below is a sample session:
+I am now working on an interpreter for untyped lambda calculus which
+is found [here](https://github.com/Jim-Fan/lambda). Progress is good.
 
-```{r, engine='bash'}
-24-11-2016 19:35:10 ~/lisp
-$  ./main
-cell_init: sizeof(cell*) = 8
-cell_init: sizeof(cell)  = 24
-cell_init: T   @ 00010410
-cell_init: NIL @ 000103f0
+This LISP interpreter is a horrible failure. It demonstrates how
+a piece of software can go wrong without proper backup by theory
+(of programming language for this case) and practical knowledge
+of tools in use (parser generator and lexer for this case).
 
-[1] 13
-13
-
-[2] abc
-abc
-
-[3] DEF
-DEF
-
-[4] (this is a list)
-(this is a list )
-```
-
-When syntax error is encountered, yyerror is fired and RPL quits:
-
-```{r, engine='bash'}
-[7] ( lambda (x) x ) 999 )
-(lambda  (x  )x )
-
-[8] 999
-
-[9] yyerror: syntax error
-```
-
-The 7th prompt accepted lambda expresion and integer 999, then fails with un-balanced ")".
+Nonetheless I would keep repo here, archived, to remind myself :-)
